@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, jsonify
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-app = Flask(_name_)
+app = Flask(__name__)
 MODEL = "models/gemini-2.5-flash"
 
 @app.route("/")
@@ -19,10 +19,12 @@ def chat():
     user_input = request.json.get("message", "")
     try:
         model = genai.GenerativeModel(MODEL)
-        response = model.generate_content(f"Responde de forma breve, práctica y con un máximo de 5 líneas. {prompt}")
+        response = model.generate_content(
+            f"Responde de forma breve, práctica y con un máximo de 5 líneas: {user_input}"
+        )
         return jsonify({"response": response.text})
     except Exception as e:
         return jsonify({"response": f"⚠ Error: {e}"})
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
