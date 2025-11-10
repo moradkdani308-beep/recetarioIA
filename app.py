@@ -1,26 +1,28 @@
-from flask import Flask, request, jsonify
 import google.generativeai as genai
 import os
+from dotenv import load_dotenv
+from flask import Flask, render_template, request, jsonify
 
-# Configura tu API Key desde el entorno
+# Cargar la clave del archivo .env
+load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-app = Flask(__name__)
+app = Flask(_name_)
+MODEL = "models/gemini-2.5-flash"
 
-@app.route("/ask", methods=["POST"])
-def ask():
-    data = request.get_json()
-    user_message = data.get("message", "")
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-    # Configurar el modelo
-    model = genai.GenerativeModel("gemini-1.5-flash")
+@app.route("/chat", methods=["POST"])
+def chat():
+    user_input = request.json.get("message", "")
+    try:
+        model = genai.GenerativeModel(MODEL)
+        response = model.generate_content(f"Responde como un chef y experto en nutrición: {user_input}")
+        return jsonify({"response": response.text})
+    except Exception as e:
+        return jsonify({"response": f"⚠ Error: {e}"})
 
-    # Generar respuesta
-    response = model.generate_content(
-        f"Responde de manera amable, clara y breve (máximo 80 palabras) a la siguiente pregunta: {user_message}"
-    )
-
-    return jsonify({"response": response.text.strip()})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+if _name_ == "_main_":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
