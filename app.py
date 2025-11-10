@@ -19,8 +19,10 @@ def chat():
     user_input = request.json.get("message", "")
     try:
         model = genai.GenerativeModel(MODEL)
+        # Prompt mejorado: paso a paso, claro, máximo 100 palabras
         response = model.generate_content(
-            f"Responde de forma breve, práctica y con un máximo de 5 líneas: {user_input}"
+            f"Responde de forma clara y paso a paso para alguien que no sabe cocinar. "
+            f"Máximo 100 palabras, cada paso en una línea separada: {user_input}"
         )
         return jsonify({"response": response.text})
     except Exception as e:
