@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+ENV/
+venv.bak/
+
+# Virtualenv
+.Python
+
+# Dotenv (NO subir .env con tus claves)
+.env
+
+# VS Code
+.vscode/
