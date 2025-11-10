@@ -16,15 +16,26 @@ def home():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_input = request.json.get("message", "")
+    user_input = request.json.get("message", "").strip().lower()
     try:
+        # Detectar saludos o agradecimientos
+        if any(word in user_input for word in ["gracias", "thank", "hola", "buenas", "adiós"]):
+            return jsonify({"response": "¡De nada! 😊 Si quieres otra receta o consejo, dime qué te gustaría preparar."})
+        
+        # Generar receta o explicación paso a paso con subsecciones
         model = genai.GenerativeModel(MODEL)
-        # Prompt mejorado: paso a paso, claro, máximo 100 palabras
-        response = model.generate_content(
-            f"Responde de forma clara y paso a paso para alguien que no sabe cocinar. "
-            f"Máximo 100 palabras, cada paso en una línea separada: {user_input}"
+        prompt = (
+            "Eres un chef tutor que explica recetas de cocina paso a paso para principiantes. "
+            "Si la receta es compleja, divide la respuesta en subsecciones: "
+            "**Ingredientes**, **Preparación**, **Consejos/Tips**. "
+            "Cada paso o consejo debe estar en una línea separada. "
+            "Máximo 120 palabras. Explica todo de manera clara y ordenada: "
+            f"{user_input}"
         )
+        response = model.generate_content(prompt)
+        
         return jsonify({"response": response.text})
+    
     except Exception as e:
         return jsonify({"response": f"⚠ Error: {e}"})
 
